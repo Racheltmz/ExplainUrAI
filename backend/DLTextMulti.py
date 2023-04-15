@@ -3,6 +3,10 @@ import numpy as np
 from DLText import DLText
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate
+from utils.PlotlyGraph import PlotlyGraph
 
 # Deep Learning Text Tasks (Multi-class or Multi-label)
 class DLTextMulti(DLText):
@@ -17,7 +21,9 @@ class DLTextMulti(DLText):
         padded = pad_sequences(seq, maxlen=self.MAX_SEQ)
         return self.model.predict(padded)
 
-    def multi_label_explainer(self, labels):
+    def generate_report(self, labels):
+        pdf_filename = f'./reports/explainurai_dl_textbinary_{super().get_current_epoch}.pdf'
+        figs = []
         # Get the prediction for each label
         for label in labels:
             class_names = ['Not ' + label, label]
@@ -32,5 +38,7 @@ class DLTextMulti(DLText):
                     result = result.reshape(-1, 2)
                     return result
                 return lime_explainer_pipeline(input_text)
-        
-            super().generate_report(class_names, classifier_fn)
+
+            # Get figure and add it to the list of figures
+            fig = super().get_plots(class_names, classifier_fn)
+            figs.append(fig)

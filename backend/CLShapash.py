@@ -1,7 +1,6 @@
 # Import Libraries
 import pandas as pd
-import shap
-from shapash.eself.sh_expainer.smart_eself.sh_expainer import SmartEself.sh_expainer
+from shapash.explainer.smart_explainer import SmartExplainer
 
 # Classical Learning with Shapash
 class CLShapash():
@@ -16,13 +15,13 @@ class CLShapash():
         self.LOCAL_MAX_FEATURES = LOCAL_MAX_FEATURES # Integer
         self.COMPACITY_NB_FEATURES = COMPACITY_NB_FEATURES # Integer
         self.label_dict = dict([(idx, lbl) for idx, lbl in enumerate(self.target_names)]) # Dictionary
-        self.sh_exp = SmartEself.sh_expainer(model=self.model, label_dict=self.label_dict).compile(x=self.X_test, y_target=self.y_test)
+        self.sh_exp = SmartExplainer.sh_expainer(model=self.model, label_dict=self.label_dict).compile(x=self.X_test, y_target=self.y_test)
     
     # Global feature importance based on SHAP
     def global_importance(self):
         self.sh_exp.plot.features_importance(max_features=5)
 
-    # Local eself.sh_expanation of an individual record
+    # Local explanation of an individual record
     def local_importance(self):
         for index in self.sample_indexes:
             self.sh_exp.plot.local_plot(index=index)
@@ -32,7 +31,7 @@ class CLShapash():
         for index in self.sample_indexes:
             self.sh_exp.plot.local_neighbors_plot(index=index, max_features=self.LOCAL_MAX_FEATURES)
 
-    # Contribution for each column to the pred value
+    # Contribution for each column to the predictions
     # Displays a plotly scatter/violin plot of a selected feature
     def feature_contribution(self):
         self.sh_exp.plot.contribution_plot(list(self.label_dict.values()).index(self.feature))
@@ -41,8 +40,8 @@ class CLShapash():
     def stability(self):
         self.sh_exp.plot.stability_plot()
 
+    # Stability plot in more detail with distribution
     def stability_dist(self):
-        # Stability plot
         self.sh_exp.plot.stability_plot(distribution=self.dist_graph)
 
     # Compacity Plot
