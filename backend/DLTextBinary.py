@@ -2,10 +2,6 @@
 from DLText import DLText
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.pdfgen import canvas
-from reportlab.platypus import SimpleDocTemplate
-from utils.PlotlyGraph import PlotlyGraph
 
 # Deep Learning Text Tasks (Binary)
 class DLTextBinary(DLText):
@@ -21,18 +17,19 @@ class DLTextBinary(DLText):
         return self.model.predict(padded)
 
     def generate_report(self):
-        pdf_filename = f'./reports/explainurai_dl_textbinary_{super().get_current_epoch}.pdf'
-        print(pdf_filename)
-        # Get figure
-        fig = super().get_plots(self.classes, self.model.predict)
-        # Create report
-        doc = SimpleDocTemplate(pdf_filename, pagesize=landscape(letter))
-
-        # Add the Plotly graph to the report
-        plotly_graph = PlotlyGraph(fig, width=500, height=400)
-        doc.build([plotly_graph])
+        html_filename = f'./reports/explainurai_dl_textbinary_{super().get_current_epoch}.html'
+        # # Get explanation
+        # fig = super().get_plots(self.classes, self.model.predict)
+        # # Write to a html file
+        # fig.write_html(html_filename)
+        # Get explanation
+        exp = super().get_explanation(self.classes, self.model.predict)
+        # Write to a html file
+        with open(html_filename, 'w', encoding='utf-8') as f:
+            f.write(exp.as_html())
+        f.close()
 
 model = '../models/content/Sentiment'
-text = "Beware of counterfeits trying to sell fake masks at cheap prices. Let's defeat coronavirus threat, #Covid_19 collectively. #BeSafe #BeACascader #CoronavirusReachesDelhi #coronavirusindia"
+text = "Beware of counterfeits trying to sell fake masks at cheap prices. Lets defeat coronavirus threat, #Covid_19 collectively. #BeSafe #BeACascader #CoronavirusReachesDelhi #coronavirusindia"
 classes = ['Negative', 'Positive']
 report = DLTextBinary(model, text, classes, NUM_FEATURES=6).generate_report()
