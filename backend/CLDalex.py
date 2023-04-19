@@ -8,7 +8,7 @@ class CLDalex():
         self.X_test = X_test # Dataframe
         self.y_test = y_test # Series
         self.sample_indexes = sample_indexes # List
-        self.xai_type = self.xai_type # String
+        self.xai_type = xai_type # String
         # Initialise Dalex explainer
         self.dx_exp = dx.Explainer(self.model, self.X_test, self.y_test)
 
