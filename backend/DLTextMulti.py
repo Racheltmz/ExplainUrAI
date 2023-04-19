@@ -1,14 +1,10 @@
 # Import Libraries
-import os
-import re
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
 from DLText import DLText
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-
-
 
 # Deep Learning Text Tasks (Multi-class or Multi-label)
 class DLTextMulti(DLText):
