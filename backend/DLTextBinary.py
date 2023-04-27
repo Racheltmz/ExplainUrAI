@@ -17,7 +17,7 @@ class DLTextBinary(DLText):
         return self.model.predict(padded)
 
     def generate_report(self):
-        html_filename = f'./reports/explainurai_dl_textbinary_{super().get_current_epoch}.html'
+        html_filename = f'{super().get_report_convention}dl_textbinary_{super().get_current_epoch}.html'
         # # Get explanation
         # fig = super().get_plots(self.classes, self.model.predict)
         # # Write to a html file
@@ -29,7 +29,11 @@ class DLTextBinary(DLText):
             f.write(exp.as_html())
         f.close()
 
+'''
+Inputs
+'''
 model = '../models/content/Sentiment'
 text = "Beware of counterfeits trying to sell fake masks at cheap prices. Lets defeat coronavirus threat, #Covid_19 collectively. #BeSafe #BeACascader #CoronavirusReachesDelhi #coronavirusindia"
 classes = ['Negative', 'Positive']
-report = DLTextBinary(model, text, classes, NUM_FEATURES=6).generate_report()
+dl_textbin_xai = DLTextBinary(model, text, classes, NUM_FEATURES=6)
+dl_textbin_xai.generate_report()

@@ -1,14 +1,13 @@
 # Import Libraries
 import numpy as np
 from PIL import Image
-
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-
-from tensorflow.keras.models import load_model
 from lime import lime_image
 from skimage.segmentation import mark_boundaries
+from tensorflow.keras.models import load_model
 
+# Import classes
 from XAI import XAI
 
 # Deep Learning Image Tasks
@@ -58,7 +57,7 @@ class DLImage(XAI):
         }
 
         # Create report in PDF format
-        with PdfPages(f'./reports/explainurai_dl_image_{super().get_current_epoch}.pdf') as pdf:
+        with PdfPages(f'{super().get_report_convention}dl_image_{super().get_current_epoch}.pdf') as pdf:
             plt.rc('axes', unicode_minus=False)
             plt.rcParams['font.family'] = super().get_matplotlib_font
             fig, axes = plt.subplots(2, 2, figsize=(12, 12))
@@ -75,6 +74,10 @@ class DLImage(XAI):
             pdf.savefig()
             plt.close()
 
+'''
+Inputs
+'''
 model = '../models/cifar10.h5'
 img = '../images/cifar.png'
-report = DLImage(model, img).generate_report()
+dl_img_xai = DLImage(model, img)
+dl_img_xai.generate_report()

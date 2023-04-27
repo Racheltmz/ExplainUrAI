@@ -8,7 +8,9 @@ import dalex as dx
 from shapash.explainer.smart_explainer import SmartExplainer
 
 '''
-Task: organise class for cl
+Work on Regression model
+Work on pipelines
+Work on fixing Dalex issue, unable to convert to html, plot is none (but launches as browser)
 '''
 # Classical Learning Classification and Regression Tasks
 class CLTasks(XAI):
@@ -21,11 +23,12 @@ class CLTasks(XAI):
         self.selected_graphs = selected_graphs # List
         self.model = pickle.load(open(f'../models/{model}.pkl', 'rb')) # pickle file
         self.X_test = pd.read_csv(X_test) # Dataframe
-        self.y_test = pd.Series(pd.read_csv(y_test), dtype=int) # Series
-        self.feature_names = list(X_test.columns.values) # List
+        self.y_test = pd.read_csv(y_test) # Series
+        self.feature_names = list(self.X_test.columns.values) # List
         self.target_names = target_names # List
         self.sample_indexes = sample_indexes # List
-        
+        self.html_explanations = [] # List of all HTML explanations
+
         # ELI5
         self.scoring = scoring # String
         self.TOP_FEATURES = TOP_FEATURES # Integer
@@ -33,7 +36,7 @@ class CLTasks(XAI):
         # Dalex
         self.xai_type = xai_type # String
         # Initialise Dalex explainer
-        self.dx_exp = dx.Explainer(self.model, self.X_test, self.y_test)
+        self.dx_exp = dx.Explainer(self.model, self.X_test, self.y_test, verbose=False)
 
         # Shapash
         self.feature = feature # String
@@ -41,46 +44,35 @@ class CLTasks(XAI):
         self.LOCAL_MAX_FEATURES = LOCAL_MAX_FEATURES # Integer
         self.COMPACITY_NB_FEATURES = COMPACITY_NB_FEATURES # Integer
         self.label_dict = dict([(idx, lbl) for idx, lbl in enumerate(self.target_names)]) # Dictionary
+        self.feature_dict = dict([(idx, lbl) for idx, lbl in enumerate(self.feature_names)]) # Dictionary
         # Initialise SmartExplainer
-        self.sh_exp = SmartExplainer.sh_expainer(model=self.model, label_dict=self.label_dict).compile(x=self.X_test, y_target=self.y_test)
+        self.sh_exp = SmartExplainer(model=self.model, label_dict=self.label_dict, features_dict=self.feature_dict)
+        self.sh_exp.compile(x=self.X_test, y_target=self.y_test)
 
         # Dictionary of graph names to graph functions
         self.cl_graphs = {
             'global_importance': self.global_importance(),
             'local_importance': self.local_importance(),
             'permutation_importance': self.permutation_importance(),
-            'model_eval': self.model_eval(),
+            # 'model_eval': self.model_eval(),
             'local_contribution': self.local_contribution(),
             'feature_contribution': self.feature_contribution(),
             'stability': self.stability(),
             'compacity': self.compacity(),
         }
 
-        # List of all HTML explanations
-        self.html_explanations = []
-
-
-    # def export_to_html(self, filename):
-    #     with open('test.html', 'w', encoding='utf-8') as f:
-    #         f.write(eli5.format_as_html(eli5_exp, show=('method', 'description', 'transition_features', 'targets', 'feature_importances')))
-
-    #     with open('test.html', 'r', encoding='utf-8') as f_in:
-    #         cleaned_html = list(filter(lambda x: x.strip().replace('\n', ''), f_in.readlines()))
-            
-    #     with open('test.html', 'w', encoding='utf-8') as f_out:
-    #         f_out.writelines(cleaned_html)
-
     # Global feature importance
     def global_importance(self):
+        # Add header
+        self.html_explanations.append('<h1>Global Feature Importance</h1>')
+
         # ELI5
         eli5_gi = eli5.explain_weights(self.model, feature_names=self.feature_names, target_names=self.target_names, top=self.TOP_FEATURES)
-        # with open('test.html', 'w', encoding='utf-8') as f:
-        #     f.write(eli5.format_as_html(eli5_exp, show=('method', 'description', 'transition_features', 'targets', 'feature_importances')))
         self.html_explanations.append(eli5.format_as_html(eli5_gi, show=('method', 'description', 'transition_features', 'targets', 'feature_importances')))
 
-        # Dalex
-        dx_gi = self.dx_exp.model_parts().plot()
-        self.html_explanations.append(dx_gi.to_html())
+        # # Dalex
+        # dx_gi = self.dx_exp.model_parts().plot()
+        # self.html_explanations.append(dx_gi.to_html())
 
         # Shapash
         sh_gi = self.sh_exp.plot.features_importance(max_features=self.TOP_FEATURES)
@@ -88,15 +80,17 @@ class CLTasks(XAI):
 
     # Local feature importance
     def local_importance(self):
+        # Add header
+        self.html_explanations.append('<h1>Local Feature Importance</h1>')
+
         for index in self.sample_indexes:
             # ELI5
-            eli5_li = eli5.explain_prediction(self.model, self.X_test.iloc[index], feature_names=self.feature_names, 
-                target_names=self.target_names, show_feature_values=True)
+            eli5_li = eli5.explain_prediction(self.model, self.X_test.iloc[index], feature_names=self.feature_names, target_names=self.target_names)
             self.html_explanations.append(eli5.format_as_html(eli5_li))
 
-            # Dalex
-            dx_li = self.dx_exp.predict_parts(self.X_test.iloc[index], type=self.xai_type).plot()
-            self.html_explanations.append(dx_li.to_html())
+            # # Dalex
+            # dx_li = self.dx_exp.predict_parts(self.X_test.iloc[index], type=self.xai_type).plot()
+            # self.html_explanations.append(dx_li.to_html())
 
             # Shapash
             sh_li = self.sh_exp.plot.local_plot(index=index)
@@ -104,43 +98,57 @@ class CLTasks(XAI):
 
     # Permutation Based Importance
     def permutation_importance(self):
+        # Add header
+        self.html_explanations.append('<h1>Permutation Based Importance</h1>')
         perm = PermutationImportance(self.model, scoring=self.scoring)
         perm.fit(self.X_test, self.y_test)
         eli5_exp = eli5.explain_weights(perm, feature_names=self.feature_names, top=self.TOP_FEATURES)
         self.html_explanations.append(eli5.format_as_html(eli5_exp))
 
-    # Model Performance
-    def model_eval(self):
-        me_dx = self.dx_exp.model_performance()
-        self.html_explanations.append(me_dx.to_html())
+    # # Model Performance
+    # def model_eval(self):
+    #     me_dx = self.dx_exp.model_performance()
+    #     self.html_explanations.append(me_dx.to_html())
 
     # Compare contribution values with the neighbours by analysing local neighbourhood of the instance
     def local_contribution(self):
         for index in self.sample_indexes:
+            # Add header
+            self.html_explanations.append('<h1>Local Contribution</h1>')
             lc_sh = self.sh_exp.plot.local_neighbors_plot(index=index, max_features=self.LOCAL_MAX_FEATURES)
             self.html_explanations.append(lc_sh.to_html())
 
     # Contribution for each column to the predictions
     # Displays a plotly scatter/violin plot of a selected feature
     def feature_contribution(self):
-        fc_sh = self.sh_exp.plot.contribution_plot(list(self.label_dict.values()).index(self.feature))
-        self.html_explanations.append(fc_sh.to_html())
+        # WARNING: COULD HV SOME ERRORS WITH THE DICTIONARY (FEATURES OR LABEL)
+        if self.task == 'Classification':
+            # Add header
+            self.html_explanations.append('<h1>Feature Contribution</h1>')
+            fc_sh = self.sh_exp.plot.contribution_plot(list(self.feature_dict.values()).index(self.feature))
+            self.html_explanations.append(fc_sh.to_html())
 
     # Stability Plot
     def stability(self):
-        self.sh_exp.plot.stability_plot()
+        # Add header
+        self.html_explanations.append('<h1>Stability Plot</h1>')
+        st_sh = self.sh_exp.plot.stability_plot()
+        self.html_explanations.append(st_sh.to_html())
         if self.task == 'Classification':
             # Stability plot in more detail with distribution
-            st_sh = self.sh_exp.plot.stability_plot(distribution=self.dist_graph)
-            self.html_explanations.append(st_sh.to_html())
+            self.html_explanations.append('<h2>Stability Plot with distribution</h2>')
+            st_sh_dist = self.sh_exp.plot.stability_plot(distribution=self.dist_graph)
+            self.html_explanations.append(st_sh_dist.to_html())
 
     # Compacity Plot
     def compacity(self):
+        # Add header
+        self.html_explanations.append('<h1>Compacity Plot</h1>')
         cp_sh = self.sh_exp.plot.compacity_plot(nb_features=self.COMPACITY_NB_FEATURES)
         self.html_explanations.append(cp_sh.to_html())
     
-    # Call for plots in the different models and generate a report
-    def generate_report(self):
+    # Call for plots in the different models
+    def plot_visualisations(self):
         if self.selected_all:
             for keys_func in self.cl_graphs.keys():
                 self.cl_graphs[keys_func]()
@@ -148,7 +156,17 @@ class CLTasks(XAI):
         else:
             for choice in self.selected_graphs:
                 self.cl_graphs[choice]()
+    
+    # Generate report
+    def generate_report(self):
+        html_filename = f'{super().get_report_convention}cl_{self.task.lower()}_{super().get_current_epoch}.html'
+        html_report = ''.join(self.html_explanations)
+        with open(html_filename, 'w', encoding='utf-8') as f:
+            f.write(html_report)
 
+'''
+Inputs
+'''
 # Either process the dataset (test set) beforehand or add a pipeline with a preprocesser
 model = 'mushroom_dt'
 
@@ -160,26 +178,6 @@ columns = pd.Series(['class','cap-shape', 'cap-surface', 'cap-color', 'bruises',
 df_mushroom = pd.read_csv('../dataset/agaricus-lepiota.data', names = columns)
 target_names=['Poisonous', 'Edible']
 sample_indexes = [1, 2]
-# # get the most frequent value
-# mostfreqval = df_mushroom['stalk-root'].mode()
-# # replace missing values
-# df_mushroom['stalk-root'] = df_mushroom['stalk-root'].replace(['?'], mostfreqval)
-# mushroom_features = df_mushroom.drop(['class', 'veil-type'], axis = 1).columns.values
-
-# X = pd.get_dummies(df_mushroom[mushroom_features])
-# y = pd.get_dummies(df_mushroom['class'])['e']
-
-# def index_reset(dfs):
-#     reseted_dfs = []
-#     for df in dfs:
-#         reseted_dfs.append(df.reset_index(drop=True))
-#     return reseted_dfs
-
-# # Still need the datasets whether you want to process or not, if use pipeline no need to process
-# X_train_m, X_test_m, y_train_m, y_test_m = train_test_split(X, y, test_size = 0.3, random_state = 42)
-# X_train_m, X_test_m, y_train_m, y_test_m = index_reset([X_train_m, X_test_m, y_train_m, y_test_m])
-# X_test_m.to_csv('../dataset/Xtestm.csv', index=False)
-# y_test_m.to_csv('../dataset/ytestm.csv', index=False)
 
 X_test = '../dataset/Xtestm.csv'
 y_test = '../dataset/ytestm.csv'
@@ -188,10 +186,11 @@ selected_graphs = [
     'global_importance',
     'local_importance',
     'permutation_importance',
-    'model_eval',
+    # 'model_eval',
     'local_contribution',
     'feature_contribution',
     'stability',
     'compacity',
 ]
-CLTasks('classification', model, X_test, y_test, selected_all, selected_graphs, target_names, sample_indexes, scoring='roc_auc_ovr_weighted')
+cl_xai = CLTasks('classification', model, X_test, y_test, selected_all, selected_graphs, target_names, sample_indexes, scoring='roc_auc_ovr_weighted', feature='condition')
+cl_xai.generate_report()

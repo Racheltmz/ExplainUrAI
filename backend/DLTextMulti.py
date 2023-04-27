@@ -2,9 +2,11 @@
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
-from DLText import DLText
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Import classes
+from DLText import DLText
 
 # Deep Learning Text Tasks (Multi-class or Multi-label)
 class DLTextMulti(DLText):
@@ -50,7 +52,7 @@ class DLTextMulti(DLText):
         report.close()
 
     def generate_report(self):
-        html_filename = f'./reports/explainurai_dl_textmulti_{super().get_current_epoch}.html'
+        html_filename = f'{super().get_report_convention}dl_textmulti_{super().get_current_epoch}.html'
         # Instantiate list to store all explanations
         # figs = []
         exps = []
@@ -78,6 +80,9 @@ class DLTextMulti(DLText):
         self.explanations_to_html(exps, html_filename)
         # self.figures_to_html(figs, html_filename)
 
+'''
+Inputs
+'''
 # The maximum number of words to consider as features for the tokenizer
 MAX_NB_WORDS = 25000
 # Max number of words in each comment
@@ -97,5 +102,6 @@ text = "We present novel understandings of the Gamma-Poisson (GaP) model, a prob
 classes = list(df.columns[1:])
 
 # Generate report
-report = DLTextMulti(text_model, text, classes, NUM_FEATURES=6, need_process=True, 
-                     ds=df, ds_text_field=df_text_field, MAX_NUM=MAX_NB_WORDS, MAX_SEQ=MAX_SEQUENCE_LENGTH).generate_report()
+dl_textmulti_xai = DLTextMulti(text_model, text, classes, NUM_FEATURES=6, need_process=True, 
+                     ds=df, ds_text_field=df_text_field, MAX_NUM=MAX_NB_WORDS, MAX_SEQ=MAX_SEQUENCE_LENGTH)
+dl_textmulti_xai.generate_report()
