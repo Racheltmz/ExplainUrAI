@@ -3,10 +3,10 @@ import eli5
 from eli5.sklearn import PermutationImportance
 
 # Classical Learning with ELI5
-class CLELI5(CLTasks):
+class CLELI5():
     def __init__(self, model, feature_names, target_names, X_test, y_test, sample_indexes, scoring=None, TOP_FEATURES=5):
-        super()
-
+        pass
+    
     # Global feature importance
     def global_importance(self):
         eli5.show_weights(self.model, feature_names=self.feature_names, target_names=self.target_names, top=self.TOP_FEATURES)

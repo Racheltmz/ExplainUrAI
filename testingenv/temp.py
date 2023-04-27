@@ -54,26 +54,26 @@
 
 # # Show plot
 # fig.write_image('./reports/lime_text.png')
-from bs4 import BeautifulSoup
-from io import TextIOWrapper
+# from bs4 import BeautifulSoup
+# from io import TextIOWrapper
 
-filename = '../notebooks/combine.html'
-test_file = '../notebooks/test.html'
-test2_file = '../notebooks/test2.html'
-with open(test_file, 'r', encoding="utf-8") as f:
-    soup = BeautifulSoup(f, 'html.parser')
-    old_body = soup.find('body')
+# filename = '../notebooks/combine.html'
+# test_file = '../notebooks/test.html'
+# test2_file = '../notebooks/test2.html'
+# with open(test_file, 'r', encoding="utf-8") as f:
+#     soup = BeautifulSoup(f, 'html.parser')
+#     old_body = soup.find('body')
 
-with open(test2_file, 'r', encoding="utf-8") as f2:
-    soup1 = BeautifulSoup(f2, 'html.parser')
-    visualisation_tags = soup1.find('body').find_all(recursive=False)
-    for tag in visualisation_tags:
-        new_body = old_body.append(tag)
-    # visualisation_str = str(TextIOWrapper(visualisation_code[0].prettify().encode('utf-8')))
-    # html_visualisation.append(visualisation_code)
-# old_body.append(visualisation_str)
-# old_body.contents = new_body
-print(soup.prettify())
+# with open(test2_file, 'r', encoding="utf-8") as f2:
+#     soup1 = BeautifulSoup(f2, 'html.parser')
+#     visualisation_tags = soup1.find('body').find_all(recursive=False)
+#     for tag in visualisation_tags:
+#         new_body = old_body.append(tag)
+#     # visualisation_str = str(TextIOWrapper(visualisation_code[0].prettify().encode('utf-8')))
+#     # html_visualisation.append(visualisation_code)
+# # old_body.append(visualisation_str)
+# # old_body.contents = new_body
+# print(soup.prettify())
 # print(old_body['body'])
 # print(type(visualisation_code))
 
@@ -95,3 +95,54 @@ print(soup.prettify())
 # with open(filename, 'w', encoding='utf-8') as report:
 #     report.write(f)
 # report.close()
+
+# selected_graphs = [
+#     'eli5.global_importance',
+#     'eli5.local_importance',
+#     'eli5.permutation_importance',
+#     'dalex.model_eval',
+#     'dalex.global_importance',
+#     'dalex.local_importance',
+#     'shapash.global_importance',
+#     'shapash.local_importance',
+#     'shapash.local_contribution',
+#     'shapash.feature_contribution',
+#     'shapash.stability',
+#     'shapash.stability_dist',
+#     'shapash.compacity',
+# ]
+
+import pandas as pd
+import pickle
+import eli5
+from eli5.sklearn import PermutationImportance
+import dalex as dx
+from shapash.explainer.smart_explainer import SmartExplainer
+from bs4 import BeautifulSoup
+
+# Either process the dataset (test set) beforehand or add a pipeline with a preprocesser
+model = pickle.load(open(f'../models/mushroom_dt.pkl', 'rb')) 
+
+# # Get dataset and process data
+# columns = pd.Series(['class','cap-shape', 'cap-surface', 'cap-color', 'bruises', 'odor', 'gill-attachment', 'gill-spacing', 
+#                      'gill-size', 'gill-color', 'stalk-shape', 'stalk-root', 'stalk-surface-above-ring', 
+#                      'stalk-surface-below-ring', 'stalk-color-above-ring', 'stalk-color-below-ring', 
+#                      'veil-type', 'veil-color', 'ring-number', 'ring-type', 'spore-print-color', 'population', 'habitat'])
+target_names=['Poisonous', 'Edible']
+sample_indexes = [1, 2]
+
+X_test = pd.read_csv('../dataset/Xtestm.csv')
+y_test = pd.read_csv('../dataset/ytestm.csv')
+feature_names = list(X_test.columns.values)
+TOP_FEATURES=5
+
+eli5_exp = eli5.explain_weights(model, feature_names=feature_names, target_names=target_names, top=TOP_FEATURES)
+
+with open('test.html', 'w', encoding='utf-8') as f:
+    f.write(eli5.format_as_html(eli5_exp, show=('method', 'description', 'transition_features', 'targets', 'feature_importances')))
+
+with open('test.html', 'r', encoding='utf-8') as f_in:
+    cleaned_html = list(filter(lambda x: x.strip().replace('\n', ''), f_in.readlines()))
+    
+with open('test.html', 'w', encoding='utf-8') as f_out:
+    f_out.writelines(cleaned_html)
