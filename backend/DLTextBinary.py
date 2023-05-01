@@ -29,11 +29,11 @@ class DLTextBinary(DLText):
             f.write(exp.as_html())
         f.close()
 
-'''
-Inputs
-'''
-model = '../models/content/Sentiment'
-text = "Beware of counterfeits trying to sell fake masks at cheap prices. Lets defeat coronavirus threat, #Covid_19 collectively. #BeSafe #BeACascader #CoronavirusReachesDelhi #coronavirusindia"
-classes = ['Negative', 'Positive']
-dl_textbin_xai = DLTextBinary(model, text, classes, NUM_FEATURES=6)
-dl_textbin_xai.generate_report()
+# '''
+# Inputs
+# '''
+# model = '../models/content/Sentiment'
+# text = "Beware of counterfeits trying to sell fake masks at cheap prices. Lets defeat coronavirus threat, #Covid_19 collectively. #BeSafe #BeACascader #CoronavirusReachesDelhi #coronavirusindia"
+# classes = ['Negative', 'Positive']
+# dl_textbin_xai = DLTextBinary(model, text, classes, NUM_FEATURES=6)
+# dl_textbin_xai.generate_report()

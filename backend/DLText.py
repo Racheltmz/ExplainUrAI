@@ -27,7 +27,7 @@ class DLText(XAI):
         if sentence_len < self.NUM_FEATURES:
             self.NUM_FEATURES = sentence_len
 
-    # Get explanation from LimeTextexplainer
+    # Get explanation from LimeTextExplainer
     def get_explanation(self, class_names, pred_fn):
         self.fix_num_samples()
         # Initialise LIME explainer

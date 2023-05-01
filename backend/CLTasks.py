@@ -163,34 +163,35 @@ class CLTasks(XAI):
         html_report = ''.join(self.html_explanations)
         with open(html_filename, 'w', encoding='utf-8') as f:
             f.write(html_report)
+        return html_filename
 
-'''
-Inputs
-'''
-# Either process the dataset (test set) beforehand or add a pipeline with a preprocesser
-model = 'mushroom_dt'
+# '''
+# Inputs
+# '''
+# # Either process the dataset (test set) beforehand or add a pipeline with a preprocesser
+# model = 'mushroom_dt'
 
-# Get dataset and process data
-columns = pd.Series(['class','cap-shape', 'cap-surface', 'cap-color', 'bruises', 'odor', 'gill-attachment', 'gill-spacing', 
-                     'gill-size', 'gill-color', 'stalk-shape', 'stalk-root', 'stalk-surface-above-ring', 
-                     'stalk-surface-below-ring', 'stalk-color-above-ring', 'stalk-color-below-ring', 
-                     'veil-type', 'veil-color', 'ring-number', 'ring-type', 'spore-print-color', 'population', 'habitat'])
-df_mushroom = pd.read_csv('../dataset/agaricus-lepiota.data', names = columns)
-target_names=['Poisonous', 'Edible']
-sample_indexes = [1, 2]
+# # Get dataset and process data
+# columns = pd.Series(['class','cap-shape', 'cap-surface', 'cap-color', 'bruises', 'odor', 'gill-attachment', 'gill-spacing', 
+#                      'gill-size', 'gill-color', 'stalk-shape', 'stalk-root', 'stalk-surface-above-ring', 
+#                      'stalk-surface-below-ring', 'stalk-color-above-ring', 'stalk-color-below-ring', 
+#                      'veil-type', 'veil-color', 'ring-number', 'ring-type', 'spore-print-color', 'population', 'habitat'])
+# df_mushroom = pd.read_csv('../dataset/agaricus-lepiota.data', names = columns)
+# target_names=['Poisonous', 'Edible']
+# sample_indexes = [1, 2]
 
-X_test = '../dataset/Xtestm.csv'
-y_test = '../dataset/ytestm.csv'
-selected_all = True
-selected_graphs = [
-    'global_importance',
-    'local_importance',
-    'permutation_importance',
-    # 'model_eval',
-    'local_contribution',
-    'feature_contribution',
-    'stability',
-    'compacity',
-]
-cl_xai = CLTasks('classification', model, X_test, y_test, selected_all, selected_graphs, target_names, sample_indexes, scoring='roc_auc_ovr_weighted', feature='condition')
-cl_xai.generate_report()
+# X_test = '../dataset/Xtestm.csv'
+# y_test = '../dataset/ytestm.csv'
+# selected_all = True
+# selected_graphs = [
+#     'global_importance',
+#     'local_importance',
+#     'permutation_importance',
+#     # 'model_eval',
+#     'local_contribution',
+#     'feature_contribution',
+#     'stability',
+#     'compacity',
+# ]
+# cl_xai = CLTasks('classification', model, X_test, y_test, selected_all, selected_graphs, target_names, sample_indexes, scoring='roc_auc_ovr_weighted', feature='condition')
+# cl_xai.generate_report()

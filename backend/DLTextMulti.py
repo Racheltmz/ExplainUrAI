@@ -51,10 +51,10 @@ class DLTextMulti(DLText):
             report.write(soup.prettify())
         report.close()
 
+    # Generate report
     def generate_report(self):
         html_filename = f'{super().get_report_convention}dl_textmulti_{super().get_current_epoch}.html'
         # Instantiate list to store all explanations
-        # figs = []
         exps = []
         # Get the prediction for each label
         labels = self.classes
@@ -62,8 +62,9 @@ class DLTextMulti(DLText):
             class_names = ['Not ' + label, label]
 
             def classifier_fn(input_text):
+                # Get label
                 label_index = labels.index(label)
-                # pick the corresponding output node 
+                # Get the prediction
                 def lime_explainer_pipeline(input_text):
                     predict_probs = self.model_pred(input_text)
                     prob_true = predict_probs[:, label_index]
@@ -71,37 +72,33 @@ class DLTextMulti(DLText):
                     result = result.reshape(-1, 2)
                     return result
                 return lime_explainer_pipeline(input_text)
-
-            # # Get figure and add it to the list of figures
-            # fig = super().get_plots(class_names, classifier_fn)
-            # figs.append(fig)
+            # Obtain the explanation and append it to a list
             exp = super().get_explanation(class_names, classifier_fn)
             exps.append(exp)
         self.explanations_to_html(exps, html_filename)
-        # self.figures_to_html(figs, html_filename)
 
-'''
-Inputs
-'''
-# The maximum number of words to consider as features for the tokenizer
-MAX_NB_WORDS = 25000
-# Max number of words in each comment
-MAX_SEQUENCE_LENGTH = 250
+# '''
+# Inputs
+# '''
+# # The maximum number of words to consider as features for the tokenizer
+# MAX_NB_WORDS = 25000
+# # Max number of words in each comment
+# MAX_SEQUENCE_LENGTH = 250
 
-# Multi-Label Text Classification
-MODEL_NAME = 'topics'
-text_model = f'../models/{MODEL_NAME}.h5'
+# # Multi-Label Text Classification
+# MODEL_NAME = 'topics'
+# text_model = f'../models/{MODEL_NAME}.h5'
 
-# Get dataset
-df = pd.read_csv('../dataset/topics.csv')
-df_text_field = 'text'
-# Sample text
-text = "We present novel understandings of the Gamma-Poisson (GaP) model, a probabilistic matrix factorization"
+# # Get dataset
+# df = pd.read_csv('../dataset/topics.csv')
+# df_text_field = 'text'
+# # Sample text
+# text = "We present novel understandings of the Gamma-Poisson (GaP) model, a probabilistic matrix factorization"
 
-# Define labels
-classes = list(df.columns[1:])
+# # Define labels
+# classes = list(df.columns[1:])
 
-# Generate report
-dl_textmulti_xai = DLTextMulti(text_model, text, classes, NUM_FEATURES=6, need_process=True, 
-                     ds=df, ds_text_field=df_text_field, MAX_NUM=MAX_NB_WORDS, MAX_SEQ=MAX_SEQUENCE_LENGTH)
-dl_textmulti_xai.generate_report()
+# # Generate report
+# dl_textmulti_xai = DLTextMulti(text_model, text, classes, NUM_FEATURES=6, need_process=True, 
+#                      ds=df, ds_text_field=df_text_field, MAX_NUM=MAX_NB_WORDS, MAX_SEQ=MAX_SEQUENCE_LENGTH)
+# dl_textmulti_xai.generate_report()
