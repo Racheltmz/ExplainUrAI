@@ -10,42 +10,44 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
+    // <a href="https://www.flaticon.com/free-icons/visual-basic" title="visual basic icons">Visual basic icons created by surang - Flaticon</a>
     title: 'Image Classification',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: require('@site/static/img/image_classification.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        For your Convolutional Neural Network models that you have trained
+        for image classification
       </>
     ),
   },
   {
+    // <a href="https://www.flaticon.com/free-icons/files-and-folders" title="files-and-folders icons">Files-and-folders icons created by itim2101 - Flaticon</a>
     title: 'Text Classification',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('@site/static/img/text_classification.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Capable in handling a few Natural Language Processing tasks such as 
+        Text Classification and Sentiment Analysis
       </>
     ),
   },
   {
+    // <a href="https://www.flaticon.com/free-icons/logistic-regression" title="logistic regression icons">Logistic regression icons created by Freepik - Flaticon</a>
     title: 'Regression',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/regression.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        For your linear regression models built with packages such as scikit-learn.
       </>
     ),
   },
   {
+    // <a href="https://www.flaticon.com/free-icons/visual" title="visual icons">Visual icons created by Freepik - Flaticon</a>
     title: 'Classification',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/classification.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        For your classification models built with packages such as scikit-learn.
       </>
     ),
   },

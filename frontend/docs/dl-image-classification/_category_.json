@@ -1,0 +1,9 @@
+{
+    "label": "Deep Learning - Image Classification",
+    "position": 2,
+    "link": {
+      "type": "generated-index",
+      "description": "Understanding how your model classifies images"
+    }
+  }
+  
