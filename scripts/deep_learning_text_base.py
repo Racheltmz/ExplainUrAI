@@ -65,7 +65,6 @@ class DLText(XAI):
                     return result
             pred_fn = lime_explainer_pipeline
         else:
-
             pred_fn = self.model.predict
 
         # Initialise LIME explainer
