@@ -1,5 +1,7 @@
 # Environment
 /env
 
-# Datasets
+# Folders
 /dataset
+/reports
+/testing
