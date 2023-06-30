@@ -112,37 +112,64 @@
 #     'shapash.compacity',
 # ]
 
-import pandas as pd
-import pickle
-import eli5
-from eli5.sklearn import PermutationImportance
-import dalex as dx
-from shapash.explainer.smart_explainer import SmartExplainer
-from bs4 import BeautifulSoup
+# import pandas as pd
+# import pickle
+# import eli5
+# from eli5.sklearn import PermutationImportance
+# import dalex as dx
+# from shapash.explainer.smart_explainer import SmartExplainer
+# from bs4 import BeautifulSoup
 
-# Either process the dataset (test set) beforehand or add a pipeline with a preprocesser
-model = pickle.load(open(f'../models/mushroom_dt.pkl', 'rb')) 
+# # Either process the dataset (test set) beforehand or add a pipeline with a preprocesser
+# model = pickle.load(open(f'../models/mushroom_dt.pkl', 'rb')) 
 
-# # Get dataset and process data
-# columns = pd.Series(['class','cap-shape', 'cap-surface', 'cap-color', 'bruises', 'odor', 'gill-attachment', 'gill-spacing', 
-#                      'gill-size', 'gill-color', 'stalk-shape', 'stalk-root', 'stalk-surface-above-ring', 
-#                      'stalk-surface-below-ring', 'stalk-color-above-ring', 'stalk-color-below-ring', 
-#                      'veil-type', 'veil-color', 'ring-number', 'ring-type', 'spore-print-color', 'population', 'habitat'])
-target_names=['Poisonous', 'Edible']
-sample_indexes = [1, 2]
+# # # Get dataset and process data
+# # columns = pd.Series(['class','cap-shape', 'cap-surface', 'cap-color', 'bruises', 'odor', 'gill-attachment', 'gill-spacing', 
+# #                      'gill-size', 'gill-color', 'stalk-shape', 'stalk-root', 'stalk-surface-above-ring', 
+# #                      'stalk-surface-below-ring', 'stalk-color-above-ring', 'stalk-color-below-ring', 
+# #                      'veil-type', 'veil-color', 'ring-number', 'ring-type', 'spore-print-color', 'population', 'habitat'])
+# target_names=['Poisonous', 'Edible']
+# sample_indexes = [1, 2]
 
-X_test = pd.read_csv('../dataset/Xtestm.csv')
-y_test = pd.read_csv('../dataset/ytestm.csv')
-feature_names = list(X_test.columns.values)
-TOP_FEATURES=5
+# X_test = pd.read_csv('../dataset/Xtestm.csv')
+# y_test = pd.read_csv('../dataset/ytestm.csv')
+# feature_names = list(X_test.columns.values)
+# TOP_FEATURES=5
 
-eli5_exp = eli5.explain_weights(model, feature_names=feature_names, target_names=target_names, top=TOP_FEATURES)
+# eli5_exp = eli5.explain_weights(model, feature_names=feature_names, target_names=target_names, top=TOP_FEATURES)
 
-with open('test.html', 'w', encoding='utf-8') as f:
-    f.write(eli5.format_as_html(eli5_exp, show=('method', 'description', 'transition_features', 'targets', 'feature_importances')))
+# with open('test.html', 'w', encoding='utf-8') as f:
+#     f.write(eli5.format_as_html(eli5_exp, show=('method', 'description', 'transition_features', 'targets', 'feature_importances')))
 
-with open('test.html', 'r', encoding='utf-8') as f_in:
-    cleaned_html = list(filter(lambda x: x.strip().replace('\n', ''), f_in.readlines()))
-    
-with open('test.html', 'w', encoding='utf-8') as f_out:
-    f_out.writelines(cleaned_html)
+# with open('test.html', 'r', encoding='utf-8') as f_in:
+#     cleaned_html = list(filter(lambda x: x.strip().replace('\n', ''), f_in.readlines()))
+
+# with open('test.html', 'w', encoding='utf-8') as f_out:
+#     f_out.writelines(cleaned_html)
+# import codecs
+# from bs4 import BeautifulSoup
+
+html_file = '../reports/explainurai_cl_classification_1687764947.html'
+# # with open(html_filename, 'r', encoding='utf-8') as f:
+# #     print(f.read())
+
+# f=codecs.open(html_filename, 'r', 'utf-8')
+# document= BeautifulSoup(f.read(), features='html.parser').get_text()
+# new_doc = document.replace("\n", "")
+# print(new_doc)
+
+
+# with open(output, 'w', encoding='utf-8') as f:
+#     f.write(new_doc)
+output = 'output.html'
+def remove_extra_lines(html_file):
+    with open(html_file, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+    # Remove extra line breaks
+    lines = [line.strip() for line in lines if line.strip()]
+    with open(output, 'w', encoding='utf-8') as file:
+        file.write('\n'.join(lines))
+
+# Usage example
+
+remove_extra_lines(html_file)

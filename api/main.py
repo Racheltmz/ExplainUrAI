@@ -85,11 +85,10 @@ def explain_cltask(
     scoring: str = 'balanced_accuracy' ,
     top_features: int = 5,
     feature: str = None,
-    dist_graph: str = 'boself.sh_expot',
     local_max_features: int = 3,
     compacity_nb_features: int = 5,
     xai_type: str = 'shap'):
     cl_xai = CLTasks(task, model, X_test, y_test, selected_all, selected_graphs, target_names, sample_indexes, scoring, 
-                    top_features, feature, dist_graph, local_max_features, compacity_nb_features, xai_type)
+                    top_features, feature, local_max_features, compacity_nb_features, xai_type)
     report_name = cl_xai.generate_report()
     return {'filename': report_name}
